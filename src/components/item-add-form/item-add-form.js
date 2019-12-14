@@ -10,9 +10,14 @@ export default class ItemAddForm extends Component{
 
     render(){
         return(
-            <form>
-                <input type='text' />
-                <input type='submit' />
+            <form className="bottom-panel d-flex">
+                <input 
+                    type='text'
+                    className="form-control new-todo-label" />
+
+                <input 
+                    type='submit' 
+                    className="btn btn-outline-secondary" />
             </form>
         )
     }

@@ -3,9 +3,8 @@ import './app-header.css';
 
 const AppHeader = () =>{
     return(
-        <div>
+        <div className="app-header d-flex">
             <h1>TodoList</h1>
-            <h2>2 more to do, 3 done</h2>
         </div>
     );
 };

@@ -36,50 +36,39 @@ export default class App extends Component {
             }]
         })
     }
+    changeStatus = async (name, id) => {
+        const { items } = this.state;
+        const idx = items.findIndex((el) => el._id === id);
+        const oldItem = items[idx];
+        const newItem = { ...oldItem, [name]: !oldItem[name] }
+        this.setState({ items: [...items.slice(0, idx), newItem, ...items.slice(idx + 1)] })
+
+        try {
+            await axios.post('https://glacial-ocean-75858.herokuapp.com/api/todo/update', newItem)
+        } catch (e) {
+            console.log(e)
+        }
+    }
     // DONE
     onToggleDone = (id) => {
-        this.setState(({ items }) => {
-            const idx = items.findIndex((el) => el._id === id);
-
-            const oldItem = items[idx];
-            const newItem = { ...oldItem, done: !oldItem.done }
-            return {
-                items: [
-                    ...items.slice(0, idx),
-                    newItem,
-                    ...items.slice(idx + 1)
-                ]
-            }
-        })
+        this.changeStatus('done', id)
     }
 
     // IMPORTANT
     onToggleImportant = (id) => {
-        this.setState(({ items }) => {
-            const idx = items.findIndex((el) => el._id === id);
-
-            const oldItem = items[idx];
-            const newItem = { ...oldItem, important: !oldItem.important }
-            return {
-                items: [
-                    ...items.slice(0, idx),
-                    newItem,
-                    ...items.slice(idx + 1)
-                ]
-            }
-        })
+        this.changeStatus('important', id)
     }
 
     // DELETE
-    onDelete = async(id) => {
+    onDelete = async (id) => {
 
         const idx = this.state.items.findIndex((el) => el._id === id);
-        const newItems = [...this.state.items.slice(0,idx),...this.state.items.slice(idx +1)]
-        this.setState({items: newItems})
+        const newItems = [...this.state.items.slice(0, idx), ...this.state.items.slice(idx + 1)]
+        this.setState({ items: newItems })
 
-        try{
-            await axios.post('https://glacial-ocean-75858.herokuapp.com/api/todo/delete',{id})
-        }catch(e){
+        try {
+            await axios.post('https://glacial-ocean-75858.herokuapp.com/api/todo/delete', { id })
+        } catch (e) {
             console.log(e)
         }
 

@@ -1,22 +1,41 @@
-import React,{ Component } from 'react';
+import React, { Component } from 'react';
 
 import './item-add-form.css';
 
-export default class ItemAddForm extends Component{
-    constructor(){
+export default class ItemAddForm extends Component {
+    constructor() {
         super();
-        this.state ={}
+        this.state = {
+            value: ''
+        }
     }
 
-    render(){
-        return(
+    changeInput = event => {
+
+        this.setState({ value: event.target.value })
+    }
+    addNewTask = async(e) => {
+        e.preventDefault()
+        if (this.state.value.length < 3) {
+            return alert('Минимальная длина задачи 3 символа')
+        }
+
+        this.props.addNewTask(this.state.value)
+        this.setState({ value: '' })
+    }
+
+    render() {
+        return (
             <form className="bottom-panel d-flex">
-                <input 
+                <input
+                    onChange={this.changeInput}
+                    value={this.state.value}
                     type='text'
                     className="form-control new-todo-label" />
 
-                <input 
-                    type='submit' 
+                <input
+                    onClick={this.addNewTask}
+                    type='submit'
                     className="btn btn-outline-secondary" />
             </form>
         )

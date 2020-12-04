@@ -12,7 +12,8 @@ const TodoList = (props) =>{
             onDelete  } = props;
 
     const elements = items.map((item) =>{
-        const { id, ...itemProps } = item;
+        const { _id, ...itemProps } = item;
+        const id = _id
         return(
             <li className="list-group-item" key={id}>
                 <TodoListItem  {...itemProps}

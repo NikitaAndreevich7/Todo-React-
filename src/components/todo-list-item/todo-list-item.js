@@ -11,7 +11,9 @@ export default class TodoListItem extends Component{
                 onToggleImportant,
                 onDelete,
                 done,
-                important } = this.props;
+                important,
+                title } = this.props;
+
 
             let classNames = 'todo-list-item';
 
@@ -27,7 +29,8 @@ export default class TodoListItem extends Component{
                 <span 
                     className="todo-list-item-label"
                     onClick={onToggleDone}>
-                    {label}
+                    {/* {label} */}
+                    {title}
                 </span>
                
                 <button type="button"

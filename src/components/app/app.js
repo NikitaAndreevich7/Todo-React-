@@ -3,38 +3,47 @@ import React, { Component } from 'react';
 import AppHeader from '../app-header';
 import TodoList from '../todo-list';
 import ItemAddForm from '../item-add-form';
+import axios from 'axios'
 import './app.css';
 
 export default class App extends Component {
 
     maxId = 100;
-    constructor(){
+    constructor() {
         super();
-        this.state={
-            items:[
-                this.createItem('Drink Coffee'),
-                this.createItem('Learn React'),
-                this.createItem('Make Awesome App'),
-            ]
+        this.state = {
+            items: []
         }
     }
 
-    createItem(label){
-        return{
-            id: ++this.maxId,
-            label,
-            important:false,
-            done:false
-        }
+    componentDidMount() {
+
+        this.getTodosList()
+    }
+
+    getTodosList = async () => {
+        const result = await axios.get('https://glacial-ocean-75858.herokuapp.com/api/todo/list')
+        this.setState({ items: result.data.todos })
+    }
+
+    createItem(label) {
+        this.setState({
+            items: [...this.state.items, {
+                id: ++this.maxId,
+                title: label,
+                important: false,
+                done: false
+            }]
+        })
     }
     // DONE
-    onToggleDone = (id) =>{
-        this.setState(({items}) =>{
-            const idx = items.findIndex((el) => el.id === id);
+    onToggleDone = (id) => {
+        this.setState(({ items }) => {
+            const idx = items.findIndex((el) => el._id === id);
 
             const oldItem = items[idx];
-            const newItem = {...oldItem, done: !oldItem.done}
-            return{
+            const newItem = { ...oldItem, done: !oldItem.done }
+            return {
                 items: [
                     ...items.slice(0, idx),
                     newItem,
@@ -45,13 +54,13 @@ export default class App extends Component {
     }
 
     // IMPORTANT
-    onToggleImportant =(id) =>{
-        this.setState(({items}) =>{
-            const idx = items.findIndex((el) => el.id === id);
+    onToggleImportant = (id) => {
+        this.setState(({ items }) => {
+            const idx = items.findIndex((el) => el._id === id);
 
             const oldItem = items[idx];
-            const newItem = {...oldItem, important: !oldItem.important}
-            return{
+            const newItem = { ...oldItem, important: !oldItem.important }
+            return {
                 items: [
                     ...items.slice(0, idx),
                     newItem,
@@ -62,38 +71,49 @@ export default class App extends Component {
     }
 
     // DELETE
-    onDelete = (id) =>{
-        this.setState(({items})=>{
-            const idx = items.findIndex((el) => el.id === id);
-            
+    onDelete = async(id) => {
 
-            return{
-                items: [
-                    ...items.slice(0, idx),
-                    ...items.slice(idx +1)
-                ]
-            }
+        const idx = this.state.items.findIndex((el) => el._id === id);
+        const newItems = [...this.state.items.slice(0,idx),...this.state.items.slice(idx +1)]
+        this.setState({items: newItems})
 
-        })
+        try{
+            await axios.post('https://glacial-ocean-75858.herokuapp.com/api/todo/delete',{id})
+        }catch(e){
+            console.log(e)
+        }
+
+
     }
 
     //ADD
-    addItem =(id) =>{
+    addItem = async (value) => {
+        const payload = {
+            title: value,
+            done: false,
+            important: false
+        }
+        this.createItem(value)
 
+        try {
+            await axios.post('https://glacial-ocean-75858.herokuapp.com/api/todo/create', payload)
+        } catch (e) {
+            console.log(e)
+        }
     }
 
-    render(){
-        const { items } =this.state;
+    render() {
+        const { items } = this.state;
 
-        return(
+        return (
             <div className="todo-app">
-                <AppHeader/>
+                <AppHeader />
                 <TodoList
-                    items = {items}
-                    onToggleDone = {this.onToggleDone}
-                    onToggleImportant = {this.onToggleImportant}
-                    onDelete = {this.onDelete}/>
-                <ItemAddForm />
+                    items={items}
+                    onToggleDone={this.onToggleDone}
+                    onToggleImportant={this.onToggleImportant}
+                    onDelete={this.onDelete} />
+                <ItemAddForm addNewTask={this.addItem} />
             </div>
         )
     }
